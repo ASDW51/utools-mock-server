@@ -1,0 +1,26 @@
+{
+  "name": "utools-mocks",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && webpack",
+    "preview": "vite preview",
+    "webpack": "webpack"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "koa": "^2.13.4",
+    "mockjs": "^1.1.0",
+    "portfinder": "^1.0.28",
+    "setimmediate": "^1.0.5",
+    "vue": "^3.2.25"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.3",
+    "vite": "^2.9.9",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "node-polyfill-webpack-plugin": "^1.1.4"
+  }
+}

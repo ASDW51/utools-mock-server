@@ -1,0 +1,15 @@
+{
+    "main":"index.html",
+    "logo":"logo.png",
+    "features":[
+        {
+            "code":"mock",
+            "explain":"在线mock",
+            "cmds":["mock","mocks","httpmock","http"]
+        }
+    ],
+    "preload":"preload.js",
+    "development":{
+        "main":"http://127.0.0.1:3000/"
+    }
+}
