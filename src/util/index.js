@@ -22,7 +22,7 @@ let project = {
 const flatPath = (arr,path,target)=>{
     arr.children && arr.children.map(item=>{
       if(item.children && item.children.length > 0 && item.type == 'dir'){
-          d(item,path + item.path + '/',target)
+         flatPath(item,path + item.path + '/',target)
       }else{
           let p = path+item.path
          item.type=='item' && target.push({...item,path:p})

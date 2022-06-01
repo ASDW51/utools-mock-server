@@ -9,7 +9,7 @@ const serverListening = ref(false)
 const loading = ref(false)
 const msg = ref('')
 const errmsg = ref('')
-const errData = reactive([])
+errmsg.value = location.href
 const path = ref('/a')
 const format = ref(JSON.stringify({
     "student|50":[
@@ -58,7 +58,7 @@ const reload = ()=>{
 
 <template>
   <div>
-    <div>{{errmsg}}-------{{errData}}</div>
+    <div>{{errmsg}}</div>
     <div>
        <input type="text" v-model="port">
        <button @click="createServer" v-if="!serverListening" :disabled="loading">创建服务</button>
