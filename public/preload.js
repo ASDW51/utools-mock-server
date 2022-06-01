@@ -1,5 +1,5 @@
-const res = require("express/lib/response")
-
+const error = require("./error")
+error.__init__()
 console.log("preload is loaded")
 require("./require.js")
 const data = Mock.mock({

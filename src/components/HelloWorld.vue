@@ -54,12 +54,6 @@ const reload = ()=>{
   console.log("reload")
   document.location.reload()
 }
-
-window.onerror = (msg,...data)=>{
-  console.log("error")
-  errmsg.value = msg,
-  errData.value = data
-}
 </script>
 
 <template>
