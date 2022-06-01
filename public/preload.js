@@ -1,3 +1,5 @@
+const res = require("express/lib/response")
+
 console.log("preload is loaded")
 require("./require.js")
 const data = Mock.mock({
@@ -10,25 +12,33 @@ window.getData = ()=>{
     return data
 }
 let server = null
+let httpServer = null
 let config = {
     port:0
 }
+let sockets = []
 const createHttpServer = async (port,apis,callback)=>{
     apis = apis?apis:{}
     if(!server){
         server = express()
-        portfinder.getPort((err,fport)=>{
-            server.listen(fport,()=>{
-                console.log(fport)
-                config.port = fport
-                const msg = port !== fport?`${port}端口被占用,`:''
-                callback(`${msg}服务器在${fport}端口启动`)
-            })
+        let fport =  await portfinder.getPortPromise()
+        httpServer = server.listen(fport,()=>{
+            console.log(fport)
+            config.port = fport
+            const msg = port !== fport?`${port}端口被占用,`:''
+            callback(`${msg}服务器在${fport}端口启动`)
         })
     }else{
         const msg = port !== config.port?`${port}端口被占用,`:''
         callback(`${msg}服务器在${config.port}端口启动`)
     }
+    httpServer && httpServer.on("connection",(socket)=>{
+        console.log("有新连接")
+        sockets.push(socket)
+    })
+    server.use((req,res,next)=>{
+        next()
+    })
     server.get("/",(req,res)=>{
         res.json("hello world")
     })
@@ -50,4 +60,14 @@ const createHttpServer = async (port,apis,callback)=>{
     }
    
 }
+const closeServer = (callback)=>{
+    sockets.forEach(socket=>{
+        socket.destroy()
+    })
+    httpServer.close((...data)=>{
+        server = null
+        callback(...data)
+    })
+}
 window.createServer = createHttpServer
+window.closeServer = closeServer
