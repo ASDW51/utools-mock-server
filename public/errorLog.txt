@@ -1,0 +1,6 @@
+SyntaxError: Unexpected token '|'
+    at new Function (<anonymous>)
+    at addData (http://127.0.0.1:3000/src/components/HelloWorld.vue?t=1654066430799:37:12)
+    at callWithErrorHandling (http://127.0.0.1:3000/node_modules/.vite/deps/vue.js?v=91db7109:1365:18)
+    at callWithAsyncErrorHandling (http://127.0.0.1:3000/node_modules/.vite/deps/vue.js?v=91db7109:1373:17)
+    at HTMLButtonElement.invoker (http://127.0.0.1:3000/node_modules/.vite/deps/vue.js?v=91db7109:7432:7)

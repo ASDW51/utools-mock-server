@@ -5,9 +5,12 @@ defineProps({
   msg: String
 })
 
-const count = ref(0)
+const serverListening = ref(false)
+const loading = ref(false)
 const msg = ref('')
-const path = ref('')
+const errmsg = ref('')
+errmsg.value = location.href
+const path = ref('/a')
 const format = ref(JSON.stringify({
     "student|50":[
         {name:"@cname()"}
@@ -31,8 +34,20 @@ const addData = ()=>{
   console.log(apis)
 }
 const createServer = ()=>{
+  loading.value = true
   window.createServer(8000,apis,(message)=>{
     msg.value = message
+    serverListening.value = true
+    loading.value = false
+  })
+}
+const closeServer = (restart=true)=>{
+  loading.value = true
+  window.closeServer((...data)=>{
+    console.log(data)
+    serverListening.value = false
+    loading.value = false
+    restart && createServer()
   })
 }
 const reload = ()=>{
@@ -43,8 +58,14 @@ const reload = ()=>{
 
 <template>
   <div>
+    <div>{{errmsg}}</div>
     <div>
-       <input type="text" v-model="port"><button @click="createServer">创建服务</button>
+       <input type="text" v-model="port">
+       <button @click="createServer" v-if="!serverListening" :disabled="loading">创建服务</button>
+       <span v-else>
+         <button @click="closeServer(false)" :disabled="loading">关闭服务</button>
+       <button @click="closeServer(true)" :disabled="loading">重启服务</button>
+       </span>
        <div>
          {{msg}}
        </div>
