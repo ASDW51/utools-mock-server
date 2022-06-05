@@ -1,13 +1,32 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
 </script> 
 
 <template>
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <router-view></router-view>
 </template>
 
 <style>
+*{
+  margin: 0;
+  padding: 0;
+}
+body{
+  width: 100vw;
+  height: 100vh;
+}
+#app{
+  width: 100%;
+  height: 100%;
+}
 
+.input-shadow{
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .3);
+}
+.desc-text{
+  color: #131314;
+  font-size: 14px;
+  margin-right: 5px;
+}
 </style>

@@ -29,8 +29,17 @@ const flatPath = (arr,path,target)=>{
       }
     })
 }
-
-export {flatPath}
+const debounce = (fn,wait)=>{
+    let timer = null
+    return ()=>{
+        if(timer)clearTimeout(timer)
+        timer = setTimeout(()=>{
+            fn()
+        },wait)
+    }
+}
+export {flatPath, debounce}
 export default {
-    flatPath
+    flatPath,
+    debounce
 }

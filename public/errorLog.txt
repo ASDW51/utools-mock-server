@@ -1,6 +1,6 @@
-SyntaxError: Unexpected token '|'
-    at new Function (<anonymous>)
-    at addData (http://127.0.0.1:3000/src/components/HelloWorld.vue?t=1654066430799:37:12)
-    at callWithErrorHandling (http://127.0.0.1:3000/node_modules/.vite/deps/vue.js?v=91db7109:1365:18)
-    at callWithAsyncErrorHandling (http://127.0.0.1:3000/node_modules/.vite/deps/vue.js?v=91db7109:1373:17)
-    at HTMLButtonElement.invoker (http://127.0.0.1:3000/node_modules/.vite/deps/vue.js?v=91db7109:7432:7)
+TypeError: Cannot read properties of undefined (reading 'push')
+    at Proxy.change (http://127.0.0.1:3000/src/views/index.vue?t=1654406960891:9:20)
+    at _createElementVNode.onClick._cache.<computed>._cache.<computed> (http://127.0.0.1:3000/src/views/index.vue?t=1654406960891:34:82)
+    at callWithErrorHandling (http://127.0.0.1:3000/node_modules/.vite/deps/chunk-QRO6HSH3.js?v=4a58790e:1365:18)
+    at callWithAsyncErrorHandling (http://127.0.0.1:3000/node_modules/.vite/deps/chunk-QRO6HSH3.js?v=4a58790e:1373:17)
+    at HTMLButtonElement.invoker (http://127.0.0.1:3000/node_modules/.vite/deps/chunk-QRO6HSH3.js?v=4a58790e:7432:7)
