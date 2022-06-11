@@ -5,12 +5,12 @@
       <div class="top-content">
         <div>
           <el-input
-            v-model="path"
+            v-model="active.path"
             placeholder="Please input"
             class="input-with-select"
           >
             <template #prepend>
-              <el-select placeholder="Select" style="width: 115px" v-model="method">
+              <el-select placeholder="Select" style="width: 115px" v-model="active.method">
                 <el-option label="GET" value="get" />
                 <el-option label="POST" value="post" />
                 <el-option label="PUT" value="put" />
@@ -30,9 +30,10 @@
           width="50%"
           height="98%"
           @change="change"
+          @blur="blur"
         ></b-ace-editor>
         <b-ace-editor
-          v-model="jsonStr"
+          v-model="mock_res"
           lang="json"
           width="50%"
           height="98%"
@@ -50,9 +51,11 @@ import "brace/ext/language_tools";
 import "brace/mode/json";
 import "brace/snippets/json";
 import "brace/theme/chrome";
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, toRefs, watch } from 'vue';
 
 import {debounce} from "../util/index"
+
+import Mock from "mockjs"
 export default {
   props:{
     active:{
@@ -62,11 +65,20 @@ export default {
   },
   components: { [Editor.name]:Editor },
   setup(props,{emit}) {
-    let active = props.active
-    let path = ref(active.path)
-    let method = ref(active.method)
-    const jsonStr = ref(JSON.stringify(active.format,null,2))
-    console.log(props.active)
+    console.log('item,active',props.active)
+    let val = typeof props.active.format == 'object'?JSON.stringify(props.active.format,null,2):props.active.format
+    let jsonStr = ref(val)
+    let mock = typeof props.active.format == 'object'?JSON.stringify(Mock.mock(props.active.format),null,2):props.active.format
+    let mock_res = ref(mock)
+    console.log("mock_res",mock)
+    watch(()=>props.active.format,(newval,oldval)=>{
+        console.log("watch jsonStr change",newval,oldval)
+        newval && (jsonStr.value = (newval?typeof newval=='string'?newval: JSON.stringify(newval,null,2):'{}'))
+        newval && (mock_res.value = (newval?JSON.stringify(Mock.mock(newval),null,2):"{}"))
+        console.log(typeof newval,newval)
+        console.log("mock_res",Mock.mock(newval))
+        
+    })
     const options = reactive({
         readOnly:true,
         showLineNumbers:false,
@@ -75,14 +87,19 @@ export default {
         cursorStyle:"none"
     })
     const change = debounce(()=>{
-          emit("save",{path,method,format:jsonStr})
-    },1000)
+          console.log("save",jsonStr)
+          emit("save",{format:jsonStr})
+    },1500)
+    const blur = ()=>{
+      emit("blur")
+    }
     return {
         options,
         jsonStr,
-        path,
-        method,
-        change
+        change,
+        mock_res,
+        blur,
+        ...toRefs(props)
     }
   },
 };

@@ -20,25 +20,31 @@ let project = {
 }
 */
 const flatPath = (arr,path,target)=>{
+    console.log(arr)
     arr.children && arr.children.map(item=>{
       if(item.children && item.children.length > 0 && item.type == 'dir'){
          flatPath(item,path + item.path + '/',target)
+         console.log("jin")
       }else{
           let p = path+item.path
          item.type=='item' && target.push({...item,path:p})
       }
     })
+    console.log(target)
 }
 const debounce = (fn,wait)=>{
     let timer = null
-    return ()=>{
+    return (...data)=>{
         if(timer)clearTimeout(timer)
         timer = setTimeout(()=>{
-            fn()
+            fn(...data)
         },wait)
     }
 }
-export {flatPath, debounce}
+const transformPath = (str)=>{
+    return str.replace(/\/+/g,'\/')
+}
+export {flatPath, debounce,transformPath}
 export default {
     flatPath,
     debounce

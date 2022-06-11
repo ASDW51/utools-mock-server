@@ -13,9 +13,6 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // https://vitejs.dev/config/
 export default defineConfig({
   base:"./",
-  build:{
-    sourcemap:true
-  },
   resolve: {
     // 配置路径别名
     alias: {

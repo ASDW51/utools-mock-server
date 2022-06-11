@@ -8,6 +8,10 @@ const routes = [
             {
                 path:"detail",
                 component:()=>import("../components/ItemDetail.vue")
+            },
+            {
+                path:"folder",
+                component:()=>import("../components/FolderEdit.vue")
             }
         ]
     }

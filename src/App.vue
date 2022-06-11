@@ -29,4 +29,18 @@ body{
   font-size: 14px;
   margin-right: 5px;
 }
+.row{
+  display: flex;
+  flex-direction: row;
+}
+.column{
+  display: flex;
+  flex-direction: column;
+}
+.align-middle{
+  align-items: center;
+}
+.justify-center{
+  justify-content: center;
+}
 </style>
