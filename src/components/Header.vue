@@ -26,19 +26,26 @@
                 </div>
             </div>
             <div class="left-bottom">
-                <el-button type="primary" @click="createServer">创建服务</el-button>
-                <el-button type="danger">关闭服务</el-button>
-                <el-button type="warning">重启服务</el-button>
-                <el-button type="success">导出配置</el-button>
+                <el-button type="primary" @click="createServer" :disabled="loading || serverListening">创建服务</el-button>
+                <el-button type="danger" 
+                    :disabled="loading || !serverListening"
+                    @click="closeServer"
+                    >关闭服务</el-button>
+                <el-button type="warning" 
+                    :disabled="loading || !serverListening"
+                    @click="restartServer"
+                >重启服务</el-button>
+                <el-button type="success" @click="openApiMsg" :disabled="loading || !serverListening">api信息</el-button>
+                <!-- <el-button type="success" :disabled="true">导出配置</el-button> -->
             </div>
         </div>
         <div class="c-header-right">
-            sss
+            
         </div>
     </div>
 </template>
 <script>
-import { computed,ref, watch } from 'vue'
+import { computed,ref, watch, toRefs } from 'vue'
 import { debounce } from '../util'
 export default {
     props:{
@@ -53,6 +60,14 @@ export default {
         port:{
             type:[String,Number],
             default:''
+        },
+        loading:{
+            type:Boolean,
+            default:false
+        },
+        serverListening:{
+            type:Boolean,
+            default:false
         }
     },
     setup(props,{emit}){
@@ -85,6 +100,18 @@ export default {
             console.log("createServer")
             emit("createServer")
         }
+        const closeServer = ()=>{
+            console.log("closeServer")
+            emit("closeServer")
+        }
+        const restartServer = ()=>{
+            console.log("restartServer")
+            emit("restartServer")
+        }
+        const openApiMsg = ()=>{
+            console.log("open","http://127.0.0.1:"+bindPort.value+'/doc')
+            window.utools.shellOpenExternal("http://127.0.0.1:"+bindPort.value+'/doc')
+        }
         return {
             val,
             select,
@@ -92,7 +119,11 @@ export default {
             createProject,
             bindPort,
             portChange,
-            createServer
+            createServer,
+            closeServer,
+            restartServer,
+            openApiMsg
+            
         }
     }
 }

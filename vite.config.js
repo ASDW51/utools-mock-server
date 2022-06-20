@@ -11,7 +11,9 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({command})=>{
+  console.log(command)
+  return {
   base:"./",
   resolve: {
     // 配置路径别名
@@ -39,5 +41,17 @@ export default defineConfig({
     Icons({
       autoInstall: true,
     }),
-  ]
-})
+  ],
+  build:{
+    terserOptions: {
+        /**
+         * command 用来判断环境
+         */
+        compress: {
+          drop_console: command !== 'serve',
+          // 默认是true
+          drop_debugger: command !== 'serve'
+        }
+    }
+  }
+}})

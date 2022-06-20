@@ -44,8 +44,21 @@ const debounce = (fn,wait)=>{
 const transformPath = (str)=>{
     return str.replace(/\/+/g,'\/')
 }
-export {flatPath, debounce,transformPath}
+
+//删除一个元素，把id || pid = this 相关联的都删掉
+const delItem = (arr,id,ids)=>{
+   arr.forEach((element,index) => {
+     if(element.pid == id){
+         ids.push(element.id)
+         delItem(arr,element.id,ids)
+     }
+   });
+    
+}
+export {flatPath, debounce,transformPath,delItem}
 export default {
     flatPath,
-    debounce
+    debounce,
+    transformPath,
+    delItem
 }

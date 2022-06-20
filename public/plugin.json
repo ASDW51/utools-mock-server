@@ -3,12 +3,22 @@
     "logo":"logo.png",
     "features":[
         {
-            "code":"mock",
-            "explain":"在线mock",
-            "cmds":["mock","mocks","httpmock","http"]
+            "code":"mock-server",
+            "explain":"本地创建mock服务",
+            "cmds":[
+                "mock",
+                "mocks",
+                "mock-server",
+                "http",
+                "mock",
+                "mockjs"          
+            ]
         }
     ],
     "preload":"preload.js",
+    "pluginSetting": {
+        "single": false
+    },
     "development":{
         "main":"http://127.0.0.1:3000/"
     }

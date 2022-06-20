@@ -8,9 +8,10 @@
             v-model="active.path"
             placeholder="Please input"
             class="input-with-select"
+            @input="input"
           >
             <template #prepend>
-              <el-select placeholder="Select" style="width: 115px" v-model="active.method">
+              <el-select placeholder="Select" style="width: 115px" v-model="active.method" @change="input">
                 <el-option label="GET" value="get" />
                 <el-option label="POST" value="post" />
                 <el-option label="PUT" value="put" />
@@ -93,12 +94,17 @@ export default {
     const blur = ()=>{
       emit("blur")
     }
+    const input = debounce(()=>{
+      console.log("saveM")
+      emit("saveM")
+    },1000)
     return {
         options,
         jsonStr,
         change,
         mock_res,
         blur,
+        input,
         ...toRefs(props)
     }
   },

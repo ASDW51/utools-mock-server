@@ -6,6 +6,10 @@
         v-model:port="port" 
         @createProject="createProject"
         @createServer="createServer"
+        @closeServer="closeServer"
+        @restartServer="restartServer"
+        :loading="loading"
+        :serverListening="serverListening"
         />
     </div>
     <div class="mid-content">
@@ -22,7 +26,10 @@
            >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
-              <span style="pointer:none" v-if="!data.editable">{{ node.label }}</span>
+              <span v-if="!data.editable">
+                <span style="pointer:none" v-if="data.type=='item'" @dblclick="dbclick(data)">{{ node.label }}</span>
+                <span style="pointer:none" v-else>{{ node.label }}</span>
+              </span>
               <span style="pointer:none" v-else>
                 <el-input 
                   v-model="data.name" 
@@ -61,7 +68,7 @@
         </div>
       </div>
       <div class="right-content">
-        <router-view :active="item" @save="save" @blur="editorBlur"></router-view>
+        <router-view :active="item" @save="save" @blur="editorBlur" @saveM="saveMenu"></router-view>
       </div>
     </div>
     <el-dialog 
@@ -103,7 +110,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useRouter, useRoute } from "vue-router";
 import { ref, reactive, computed, toRefs, onMounted, watch } from "vue";
 import {cloneDeep, debounce} from "lodash-es"
-import {flatPath,transformPath} from "../util/index.js"
+import {flatPath,transformPath, delItem} from "../util/index.js"
 export default {
   setup() {
 
@@ -121,6 +128,8 @@ export default {
     //ref
     const tree = ref(null)
     const input = ref(null)
+    let loading = ref(false)
+    let serverListening = ref(false)
     //router
     const router = useRouter();
     const route = useRoute();
@@ -172,12 +181,18 @@ export default {
       return res
     });
     const projectOption = computed(()=>{
+      if(Object.values(initMenu).length==0){
+        return []
+      }
       return Object.values(initMenu).map(item=>{
         let root = item.find(child=>child.type == 'root')
-        return {
-          label:root.name,
-          value:root.id
+          if(root){
+            return {
+            label:root.name,
+            value:root.id
+          }
         }
+        
       })
     })
     const port = computed({
@@ -321,9 +336,9 @@ export default {
        console.log("changeName",data)
       if(/^[A-Za-z]+$/g.test(data.name)){
         console.log("英文")
-        data.path = data.name
+        !data.path && (data.path = data.name)
       }else{
-        data.path = ''
+        !data.path && (data.path = '')
       }
       let {id} = data
         // menu[index] = data
@@ -331,12 +346,21 @@ export default {
         activeItem.item[key] = data[key]
       }
     },1000)
+    const dbclick = (data)=>{
+      console.log("dbclick")
+      data.editable = true
+      setTimeout(()=>{
+        input.value.focus()
+      },0)
+    }
     const blur = (data)=>{
+      console.log('blur')
       if(data.name == '' || !data.name){
         ElMessage({message:"名称不能为空",type:"warning"})
         input.value.focus()
         return
       }
+      data.editable = false
      
     }
     const Del = (data,node,e)=>{
@@ -350,22 +374,42 @@ export default {
           type: 'warning',
         }).then(res=>{
           menu.menu = []
+          delete initMenu[projectId.value]
           saveMenu()
         })
-        return
+      }else if(activeItem.item.type == 'dir'){
+        let id = activeItem.item.id
+        ElMessageBox.confirm('将删除整个整个目录？',
+          '',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).then(res=>{
+          let ids = [id]
+          delItem(menu.menu,id,ids)
+          console.log(ids,id)
+          menu.menu = menu.menu.filter(item=>ids.findIndex(it=>it==item.id)==-1)
+          initMenu[projectId.value] = menu.menu
+          setTimeout(()=>{
+            saveMenu()
+          },1000)
+        })
+      }else{
+          ElMessageBox.confirm('确定删除吗？',
+          '',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }).then(res=>{
+            let index = menu.menu.findIndex(item=>item.id == activeItem.item.id)
+            menu.menu.splice(index,1)
+            activeItem.item = menu.menu.find(item=>item.type=='root')
+            saveMenu()
+          })
       }
-      ElMessageBox.confirm('确定删除吗？',
-      '',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(res=>{
-        let index = menu.menu.findIndex(item=>item.id == activeItem.item.id)
-        menu.menu.splice(index,1)
-        activeItem.item = menu.menu.find(item=>item.type=='root')
-        saveMenu()
-      })
+
         e.stopPropagation()
       
     }
@@ -395,10 +439,32 @@ export default {
     }
     //header click group
     const createServer = ()=>{
+      loading.value = true
       let arr = []
       flatPath(dir?.value[0],'/',arr)
       arr = arr.map(item=>({...item,path:transformPath(item.path)}))
       console.log(arr)
+      window.createServer(port.value,arr,(obj)=>{
+        console.log(obj)
+        ElMessage(obj.msg,'',{
+          type:"warning"
+        })
+        port.value = obj.port
+        serverListening.value = true
+        loading.value = false
+      })
+    }
+    const closeServer = (restart=false)=>{
+      loading.value = true
+      window.closeServer((...data)=>{
+        console.log(data)
+        serverListening.value = false
+        loading.value = false
+        restart && createServer()
+      })
+    }
+    const restartServer = ()=>{
+      closeServer(true)
     }
     return {
       dir,
@@ -407,6 +473,7 @@ export default {
       menu,
       activeItem,
       save,
+      saveMenu,
       ...toRefs(activeItem),
       showAddProject,
       createProject,
@@ -427,7 +494,12 @@ export default {
       finishInput,
       blur,
       editorBlur,
-      createServer
+      createServer,
+      dbclick,
+      loading,
+      serverListening,
+      closeServer,
+      restartServer
     };
   },
 };
@@ -452,6 +524,7 @@ export default {
   /* background-color: green; */
   padding: 12px;
   border-right: 1px solid #E6E6E6;
+  max-width:30%
 }
 .container .mid-content .right-content {
   flex: 3;
