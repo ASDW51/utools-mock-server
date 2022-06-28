@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@element-plus/icons": "^0.0.11",
+    "axios": "^0.27.2",
     "bin-editor-next": "^1.1.0",
     "element-plus": "^2.2.2",
     "express": "^4.18.1",

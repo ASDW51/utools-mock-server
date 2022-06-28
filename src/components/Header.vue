@@ -2,7 +2,7 @@
     <div class="c-header">
         <div class="c-header-left">
             <div class="left-top">
-                <el-select placeholder="显示当前项目" class="input-shadow" :model-value="val" @change="changeOption" ref="select">
+                <el-select placeholder="显示当前项目" class="input-shadow" :model-value="val" @change="changeOption" ref="select" :disabled="loading || serverListening">
                     <el-option 
                          v-for="item in options"
                         :key="item.value"
@@ -22,7 +22,7 @@
                 </el-select>
                 <div class="port-div">
                     <span class="desc-text">端口</span>
-                    <el-input type="number" style="width:90px;" class="input-shadow" v-model="bindPort" @input="portChange" ></el-input>
+                    <el-input type="number" style="width:90px;" class="input-shadow" v-model="bindPort" @input="portChange" :disabled="loading || serverListening"></el-input>
                 </div>
             </div>
             <div class="left-bottom">
@@ -36,6 +36,7 @@
                     @click="restartServer"
                 >重启服务</el-button>
                 <el-button type="success" @click="openApiMsg" :disabled="loading || !serverListening">api信息</el-button>
+                <el-button type="info" @click="exportJS" :disabled="loading || !serverListening">生成mock代码</el-button>
                 <!-- <el-button type="success" :disabled="true">导出配置</el-button> -->
             </div>
         </div>
@@ -47,6 +48,7 @@
 <script>
 import { computed,ref, watch, toRefs } from 'vue'
 import { debounce } from '../util'
+import axios from "axios"
 export default {
     props:{
         options:{
@@ -71,6 +73,13 @@ export default {
         }
     },
     setup(props,{emit}){
+        const getPath = ()=>{
+            let path = utools.dbStorage.getItem("saveFilePath") 
+            return path?path:utools.getPath('downloads') + '/mock.js'
+        }
+        const savePath = (path)=>{
+            utools.dbStorage.setItem("saveFilePath",path)
+        }
         console.log(props.projectId)
         let val = computed(()=>{
             return props.projectId
@@ -112,6 +121,27 @@ export default {
             console.log("open","http://127.0.0.1:"+bindPort.value+'/doc')
             window.utools.shellOpenExternal("http://127.0.0.1:"+bindPort.value+'/doc')
         }
+        const downloadFile = (data,filename="unknow")=>{
+            let res = utools.showSaveDialog({ 
+                title: '导出Mockjs文件', 
+                defaultPath: getPath(),
+                buttonLabel: '保存'
+            })
+            if(!res)return
+            savePath(res)
+            window.writeFile(res,data)
+            console.log("save",res)
+            utools.shellShowItemInFolder(res)
+            return
+        }
+        const exportJS = ()=>{
+            axios.get(`http://127.0.0.1:${bindPort.value}/mock-export`).then(res=>{
+                // let blob = new Blob([res.data],{
+                //     type:"text/plain"
+                // })
+                downloadFile(res.data,'mock.js')
+            })
+        }
         return {
             val,
             select,
@@ -122,8 +152,8 @@ export default {
             createServer,
             closeServer,
             restartServer,
-            openApiMsg
-            
+            openApiMsg,
+            exportJS,
         }
     }
 }
@@ -138,7 +168,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex:1.5;
+    flex:3;
 }
 .c-header .c-header-right{
     flex: 1;

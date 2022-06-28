@@ -116,8 +116,9 @@ export default {
 
     //var
     const getMenu = ()=>{
-      let menu = localStorage.getItem("menu")
-      return menu?JSON.parse(menu):{}
+      // let menu = localStorage.getItem("menu")
+      let menu = utools.dbStorage.getItem("menu")
+      return menu?menu:{}
     }
     let activeItem = reactive({
       item:{}
@@ -199,6 +200,7 @@ export default {
       get:()=>{
         console.log('port',initMenu)
         if(Object.keys(initMenu).length == 0) return ''
+        console.log(initMenu)
         console.log(projectId)
         return initMenu[projectId.value].find(item=>item.type == 'root').port
       },
@@ -250,7 +252,7 @@ export default {
     }
     const saveMenu = ()=>{
       console.log("saveMenu",initMenu)
-      localStorage.setItem("menu",JSON.stringify(initMenu))
+      utools.dbStorage.setItem("menu",JSON.parse(JSON.stringify(initMenu)))
     }
     
     const confirm = ()=>{
@@ -270,6 +272,7 @@ export default {
       }
       !initMenu[obj.id] && (initMenu[obj.id] = [])
       initMenu[obj.id].push(obj)
+      console.log(initMenu)
       // menu.push(obj)
       saveMenu()
       // 跳到新建的项目去
@@ -365,6 +368,11 @@ export default {
     }
     const Del = (data,node,e)=>{
       console.log("Del",data,e)
+      console.log("active",activeItem)
+      if(Object.keys(activeItem.item).length == 0){
+          ElMessage({message:"请先选中需操作项",type:"warning"})
+          return
+      }
       if(activeItem.item.type == 'root'){
          ElMessageBox.confirm('将删除整个项目？',
           '',
@@ -439,9 +447,14 @@ export default {
     }
     //header click group
     const createServer = ()=>{
+      if(Object.keys(initMenu).length == 0){
+        ElMessage({message:"请先创建项目",type:"warning"})
+        return
+      }
       loading.value = true
       let arr = []
-      flatPath(dir?.value[0],'/',arr)
+      console.log("dir.value",dir?.value)
+      flatPath(dir?.value[0],dir?.value[0]?.path+'/',arr)
       arr = arr.map(item=>({...item,path:transformPath(item.path)}))
       console.log(arr)
       window.createServer(port.value,arr,(obj)=>{
