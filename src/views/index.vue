@@ -82,7 +82,7 @@
                     项目名称
                   </el-col>
                   <el-col :span="18">
-                    <el-input class="input-shadow" placeholder="输入项目名称" v-model="projectName"></el-input>
+                    <el-input class="input-shadow" placeholder="输入项目名称" v-model="projectName" ref="proNameRef"></el-input>
                   </el-col>
                 </el-row>
                  <el-row align="middle">
@@ -129,6 +129,8 @@ export default {
     //ref
     const tree = ref(null)
     const input = ref(null)
+    const proNameRef = ref(null)
+    
     let loading = ref(false)
     let serverListening = ref(false)
     //router
@@ -161,13 +163,10 @@ export default {
       let menu2 = cloneDeep(menu.menu)
       let temp = {};
       let res = []
-      console.log("meun",menu2)
       for(let value of menu2){
         temp[value.id] = value
       }
-      console.log(temp)
       for(let value of Object.values(temp)){
-        console.log('val',value)
         if(value){
           if(value.pid){
             if(!temp[value.pid].children){
@@ -223,12 +222,12 @@ export default {
       activeItem.node = node
       if(data.type == 'item'){
           router.push({
-              path:"/detail"
+              path:"/index/detail"
           })
       }else{
           console.log("folder")
           router.push({
-            path:"/folder"
+            path:"/index/folder"
           })
       }
       console.log("nodeclick")
@@ -238,7 +237,10 @@ export default {
     const save = (data)=>{
       // activeItem.item.method = data.method.value
       // activeItem.item.path = data.path.value
-      console.log("idex save",activeItem.item.type)
+      console.log("idex save",data)
+      if(data.isTransfrom){
+        data.format.value = data.format.value.replace(/\'/g,'"')
+      }
       if(activeItem.item.type !== "item")return
       try{
         console.log(data.format.value,JSON.parse(data.format.value))
@@ -248,7 +250,11 @@ export default {
       }
     }
     const createProject = ()=>{
+      projectName.value = ""
       showAddProject.value = true
+      setTimeout(()=>{
+        proNameRef.value.focus()
+      })
     }
     const saveMenu = ()=>{
       console.log("saveMenu",initMenu)
@@ -424,8 +430,6 @@ export default {
 
     //输入完成会执行
     const finishInput = (data)=>{
-      console.log("0000000000000000000000-finishinput")
-      console.log(data)
       if(!data.name){
         // 无效输入 ， 删掉
       }else{
@@ -433,8 +437,7 @@ export default {
         setTimeout(()=>{
           saveMenu()
         },1000)
-        let p = data.type == 'item' ? '/detail' : '/folder'
-        console.log(p)
+        let p = data.type == 'item' ? '/index/detail' : '/index/folder'
         router.push({
           path:p
         })
@@ -465,7 +468,12 @@ export default {
         port.value = obj.port
         serverListening.value = true
         loading.value = false
-      })
+        if(route.path=="/index/api"){
+          router.push({
+            path:"/index"
+          })
+        }
+      },initMenu)
     }
     const closeServer = (restart=false)=>{
       loading.value = true
@@ -512,7 +520,8 @@ export default {
       loading,
       serverListening,
       closeServer,
-      restartServer
+      restartServer,
+      proNameRef
     };
   },
 };

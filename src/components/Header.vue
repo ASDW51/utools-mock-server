@@ -47,6 +47,7 @@
 </template>
 <script>
 import { computed,ref, watch, toRefs } from 'vue'
+import {useRouter} from "vue-router"
 import { debounce } from '../util'
 import axios from "axios"
 export default {
@@ -73,6 +74,8 @@ export default {
         }
     },
     setup(props,{emit}){
+        
+        const router = useRouter()
         const getPath = ()=>{
             let path = utools.dbStorage.getItem("saveFilePath") 
             return path?path:utools.getPath('downloads') + '/mock.js'
@@ -118,6 +121,13 @@ export default {
             emit("restartServer")
         }
         const openApiMsg = ()=>{
+            router.push({
+                path:"/index/api",
+                query:{
+                    port:bindPort.value
+                }
+            })
+            return
             console.log("open","http://127.0.0.1:"+bindPort.value+'/doc')
             window.utools.shellOpenExternal("http://127.0.0.1:"+bindPort.value+'/doc')
         }

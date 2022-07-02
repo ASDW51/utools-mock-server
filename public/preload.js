@@ -17,7 +17,7 @@ let config = {
     port:0
 }
 let sockets = []
-const createHttpServer = async (port,apis,callback)=>{
+const createHttpServer = async (port,apis,callback,allMenu)=>{
     console.log("initPort",port)
     apis = apis?apis:[]
     if(!server){
@@ -61,11 +61,11 @@ const createHttpServer = async (port,apis,callback)=>{
         res.send(str)
     })
     server.get("/doc",(req,res)=>{
-        let docArr = apis.map(item=>'接口名称：'+item.name + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请求方法：' + item.method + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请求地址：' + 'http://127.0.0.1:'+config.port+item.path)
-        console.log("doc",docArr)
-        let r = docArr.join("<br/>")
-        console.log(r)
-        res.send(r)
+        res.json(apis)
+    })
+    server.get("/mock-import",(req,res)=>{
+        console.log("allmenu",allMenu)
+        res.json(allMenu)
     })
     console.log(apis)
     for(let key in apis){

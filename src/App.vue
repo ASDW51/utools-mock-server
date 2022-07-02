@@ -1,6 +1,26 @@
 <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
+// This starter template is using Vue 3 <script setup> SFC
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+import {useRouter} from "vue-router"
+const router = useRouter()
+utools.onPluginEnter((e)=>{
+  console.log("插件启动时",e)
+  let code = e.code
+  if(code == 'setting'){
+    router.push("/setting")
+  }else if(code == 'import'){
+    router.push({
+      path:"/setting",
+      query:{
+        mode:"import",
+        address:e.payload
+      }
+    })
+  }else{
+    router.push("/index")
+  }
+
+})
 </script> 
 
 <template>

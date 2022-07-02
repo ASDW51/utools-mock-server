@@ -6,7 +6,7 @@
         <div>
           <el-input
             v-model="active.path"
-            placeholder="Please input"
+            placeholder="请输入名称"
             class="input-with-select"
             @input="input"
           >
@@ -23,10 +23,11 @@
       </div>
     </div>
     <div class="item-detail-bottom">
-      <div class="title">Response Mock</div>
+      <div class="title">Response Mock <el-checkbox v-model="transfromDouble" @change="checkboxChange">单引号转双引号</el-checkbox></div>
       <div class="editor">
         <b-ace-editor
           v-model="jsonStr"
+          ref="editor"
           lang="json"
           width="50%"
           height="98%"
@@ -66,6 +67,12 @@ export default {
   },
   components: { [Editor.name]:Editor },
   setup(props,{emit}) {
+    const transfromDouble = ref(false)
+    let check = utools.dbStorage.getItem("isTransfrom")
+    transfromDouble.value = check?check:false
+    console.log("check",check)
+    const editor = ref(null)
+    let lastCursor = {row:0,column:0}
     console.log('item,active',props.active)
     let val = typeof props.active.format == 'object'?JSON.stringify(props.active.format,null,2):props.active.format
     let jsonStr = ref(val)
@@ -78,6 +85,8 @@ export default {
         newval && (mock_res.value = (newval?JSON.stringify(Mock.mock(newval),null,2):"{}"))
         console.log(typeof newval,newval)
         console.log("mock_res",Mock.mock(newval))
+        console.log("watch lastCurson",lastCursor)
+        editor.value.editor.gotoLine(lastCursor.row+1,lastCursor.column+1)
         
     })
     const options = reactive({
@@ -88,8 +97,13 @@ export default {
         cursorStyle:"none"
     })
     const change = debounce(()=>{
+          let point = editor.value.editor.selection.getCursor()
+          console.log("changePoint",point)
+          if(!(point.row == 0 && point.column == 0)){
+            lastCursor = point
+          }
           console.log("save",jsonStr)
-          emit("save",{format:jsonStr})
+          emit("save",{format:jsonStr,isTransfrom:transfromDouble.value})
     },1500)
     const blur = ()=>{
       emit("blur")
@@ -98,6 +112,9 @@ export default {
       console.log("saveM")
       emit("saveM")
     },1000)
+    const checkboxChange = (val)=>{
+      utools.dbStorage.setItem("isTransfrom",val)
+    }
     return {
         options,
         jsonStr,
@@ -105,6 +122,9 @@ export default {
         mock_res,
         blur,
         input,
+        editor,
+        transfromDouble,
+        checkboxChange,
         ...toRefs(props)
     }
   },

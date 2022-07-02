@@ -1,10 +1,8 @@
 const path = require("path")
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
-
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -36,21 +34,22 @@ export default defineConfig(({command})=>{
       resolvers: [  
         IconsResolver({
         enabledCollections: ['ep'],
-      }),,ElementPlusResolver()],
+      }),ElementPlusResolver()],
     }),
     Icons({
       autoInstall: true,
     }),
   ],
   build:{
+    minify:"terser",
     terserOptions: {
         /**
          * command 用来判断环境
          */
         compress: {
-          drop_console: command !== 'serve',
+          drop_console: true,
           // 默认是true
-          drop_debugger: command !== 'serve'
+          drop_debugger: true
         }
     }
   }

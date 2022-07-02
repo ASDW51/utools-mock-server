@@ -1,7 +1,21 @@
-# Vue 3 + Vite
+# mock-server
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+utools插件，借助Node环境在本地创建mock服务，支持mock预览，数据导入等功能。
 
-## Recommended IDE Setup
+![index](./screenhots/index.png)
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+# api总览
+
+![index](./screenhots/api.png)
+
+# 生成mock代码
+
+![index](./screenhots/export.png)
+
+# 内网导入
+
+![index](./screenhots/import.png)
+
+# 数据设置
+
+![index](./screenhots/setting.png)

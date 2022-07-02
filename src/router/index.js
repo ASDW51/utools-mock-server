@@ -2,7 +2,7 @@ import {createRouter, createWebHashHistory} from "vue-router"
 
 const routes = [
     {
-        path:"/",
+        path:"/index",
         component:()=>import("../views/index.vue"),
         children:[
             {
@@ -12,8 +12,16 @@ const routes = [
             {
                 path:"folder",
                 component:()=>import("../components/FolderEdit.vue")
+            },
+            {
+                path:"api",
+                component:()=>import("../views/api.vue")
             }
         ]
+    },
+    {
+        path:"/setting",
+        component:()=>import("../views/setting.vue")
     }
 ]
 
