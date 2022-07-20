@@ -106,6 +106,7 @@ export default {
         }
         const portChange = debounce((val)=>{
             emit("update:port",val)
+            emit("saveM")
         },1000)
 
         const createServer = ()=>{

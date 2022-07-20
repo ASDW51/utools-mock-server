@@ -8,6 +8,7 @@
         @createServer="createServer"
         @closeServer="closeServer"
         @restartServer="restartServer"
+        @saveM="saveMenu"
         :loading="loading"
         :serverListening="serverListening"
         />
